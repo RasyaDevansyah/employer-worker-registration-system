@@ -1,4 +1,4 @@
-package com.cbozan.view.record;
+package com.cbozan.view.helper;
 import java.awt.Component;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;

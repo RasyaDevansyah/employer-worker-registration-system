@@ -26,6 +26,7 @@ import com.cbozan.view.component.RecordTextField;
 import com.cbozan.view.component.TextArea;
 import com.cbozan.view.helper.Control;
 import com.cbozan.view.helper.Observer;
+import com.cbozan.view.helper.ViewUtils;
 
 public class WorkerPanel extends JPanel implements Observer, Serializable, ActionListener{
 

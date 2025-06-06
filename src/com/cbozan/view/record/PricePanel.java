@@ -23,6 +23,7 @@ import com.cbozan.exception.EntityException;
 import com.cbozan.view.component.RecordTextField;
 import com.cbozan.view.helper.Control;
 import com.cbozan.view.helper.Observer;
+import com.cbozan.view.helper.ViewUtils;
 
 public class PricePanel extends JPanel implements Observer, Serializable, ActionListener{
 	

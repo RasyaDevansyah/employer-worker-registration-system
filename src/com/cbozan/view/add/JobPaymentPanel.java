@@ -36,6 +36,7 @@ import com.cbozan.entity.Job;
 import com.cbozan.exception.EntityException;
 import com.cbozan.view.component.SearchBox;
 import com.cbozan.view.helper.Observer;
+import com.cbozan.view.helper.ViewUtils;
 
 public class JobPaymentPanel extends JPanel implements Observer,FocusListener, ActionListener, Serializable{
 
@@ -285,31 +286,17 @@ public class JobPaymentPanel extends JPanel implements Observer,FocusListener, A
 						amountTextArea
 				};
 		
-				int result = JOptionPane.showOptionDialog(this, pane, "Confirmation", 1, 1, 
-						new ImageIcon("src\\icon\\accounting_icon_1_32.png"), new Object[] {"SAVE", "CANCEL"}, "CANCEL");
-				
+
+				int result = ViewUtils.showConfirmationDialog(this, "Confirmation", pane);
 				
 				// System.out.println(result);
 				// 0 -> SAVE
 				// 1 -> CANCEL
 				
-				if(result == 0) {
-					
-					Invoice.InvoiceBuilder builder = new Invoice.InvoiceBuilder();
-					builder.setId(Integer.MAX_VALUE);
-					builder.setJob(selectedJob);
-					builder.setAmount(new BigDecimal(amount));
-					
-					Invoice invoice = null;
-					try {
-						invoice = builder.build();
-					} catch (EntityException e1) {
-						System.out.println(e1.getMessage());
-					}
-					
-					if(InvoiceDAO.getInstance().create(invoice)) { 
-						JOptionPane.showMessageDialog(this, "Registration successful");
-						notifyAllObservers();
+				if(result == 0) {	
+				    if(InvoiceDAO.getInstance().create(selectedJob, new BigDecimal(amount))) {
+				        JOptionPane.showMessageDialog(this, "Registration successful");
+				        notifyAllObservers();
 					} else {
 						JOptionPane.showMessageDialog(this, "Not saved", "DataBase error", JOptionPane.ERROR_MESSAGE);
 					}

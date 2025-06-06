@@ -37,6 +37,7 @@ import com.cbozan.view.component.SearchBox;
 import com.cbozan.view.component.TextArea;
 import com.cbozan.view.display.EmployerCard;
 import com.cbozan.view.helper.Observer;
+import com.cbozan.view.helper.ViewUtils;
 
 public class JobPanel extends JPanel implements Observer, Serializable, ActionListener{
 

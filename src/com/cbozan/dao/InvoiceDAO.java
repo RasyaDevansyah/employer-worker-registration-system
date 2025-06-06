@@ -1,6 +1,7 @@
 package com.cbozan.dao;
 
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,6 +17,7 @@ import javax.swing.JOptionPane;
 import com.cbozan.entity.Employer;
 import com.cbozan.entity.Invoice;
 import com.cbozan.entity.Invoice.InvoiceBuilder;
+import com.cbozan.entity.Job;
 import com.cbozan.exception.EntityException;
 
 public class InvoiceDAO {
@@ -36,11 +38,6 @@ public class InvoiceDAO {
 		return null;
 	}
 	
-	public void refresh() {
-		setUsingCache(false);
-		list();
-		setUsingCache(true);
-	}
 	
 	
 	public List<Invoice> list(Employer employer){
@@ -200,6 +197,32 @@ public class InvoiceDAO {
 //		
 //	}
 	
+
+	public boolean create(Job job, BigDecimal amount) {
+	    if (job == null || amount == null) return false;
+
+	    Invoice.InvoiceBuilder builder = new Invoice.InvoiceBuilder();
+	    builder.setId(Integer.MAX_VALUE);
+	    builder.setJob(job);
+	    builder.setAmount(amount);
+
+	    Invoice invoice = null;
+	    try {
+	        invoice = builder.build();
+	    } catch (EntityException e) {
+	        // ... handle exception
+	        return false;
+	    }
+	    // ... Panggil metode create(invoice) yang sudah ada
+	    return this.create(invoice);
+	}
+	
+	
+	public void refresh() {
+		setUsingCache(false);
+		list();
+		setUsingCache(true);
+	}
 	
 	public boolean create(Invoice invoice) {
 		
