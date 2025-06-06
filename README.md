@@ -26,7 +26,7 @@ An accounting program that contains employee and employer information and record
 
 Postgresql is used in this program. You can find the necessary jar file for postgresql java connection here:
 
-> https://jdbc.postgresql.org/download.html
+> https://jdbc.postgresql.org/download/
 
 Or you can use a different database but for this to work, change:
 ```
