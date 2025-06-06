@@ -189,104 +189,108 @@ public class WorkerPanel extends JPanel implements Observer, Serializable, Actio
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
 		if(e.getSource() == saveButton) {
-			
-			String fname, lname, iban, phoneNumber, description;
-			
-			fname = fnameTextField.getText().trim().toUpperCase();
-			lname = lnameTextField.getText().trim().toUpperCase();
-			iban = ibanTextField.getText().replaceAll("\\s+",  "").toUpperCase();
-			phoneNumber = phoneNumberTextField.getText().replaceAll("\\s+",  "");
-			description = descriptionTextArea.getText().trim().toUpperCase();
-			
-			if( fname.equals("") || lname.equals("") || !Control.phoneNumberControl(phoneNumber) || !Control.ibanControl(iban)) {
-				
-				String message = "Please fill in required fields or \nEnter the Phone Nu. or Iban format correctly";
-				JOptionPane.showMessageDialog(this, message, "ERROR", JOptionPane.ERROR_MESSAGE);
-				
-			} else {
-				
-				JTextArea fnameTextArea, lnameTextArea, phoneNumberTextArea, ibanTextArea, descriptionTextArea; 
-				
-				fnameTextArea = new JTextArea(fname);
-				fnameTextArea.setEditable(false);
-				
-				lnameTextArea = new JTextArea(lname);
-				lnameTextArea.setEditable(false);
-				
-				phoneNumberTextArea = new JTextArea(phoneNumber);
-				phoneNumberTextArea.setEditable(false);
-				
-				ibanTextArea = new JTextArea(iban);
-				ibanTextArea.setEditable(false);
-				
-				descriptionTextArea = new JTextArea(description);
-				descriptionTextArea.setEditable(false);
-				
-				
-				
-				Object[] pane = {
-						new JLabel("Name"),
-						fnameTextArea,
-						new JLabel("Surname"),
-						lnameTextArea,
-						new JLabel("Phone Number"),
-						phoneNumberTextArea,
-						new JLabel("Iban"),
-						ibanTextArea,
-						new JLabel("Description"),
-						new JScrollPane(descriptionTextArea) {
-							private static final long serialVersionUID = 1L;
-							public Dimension getPreferredSize() {
-								return new Dimension(200, TH * 3);
-							}
-						}
-				};
-				
-				
+			saveWorker();
+		}
+	}
+
+	private void saveWorker() {
+		String fname, lname, iban, phoneNumber, description;
 		
-				int result = JOptionPane.showOptionDialog(this, pane, "Confirmation", 1, 1, 
-						new ImageIcon("src\\icon\\accounting_icon_1_32.png"), new Object[] {"SAVE", "CANCEL"}, "CANCEL");
-				
-				
-				// System.out.println(result);
-				// 0 -> SAVE
-				// 1 -> CANCEL
-						
-				if(result == 0) {
-					
-					Worker.WorkerBuilder builder = new Worker.WorkerBuilder();
-					builder.setId(Integer.MAX_VALUE);
-					builder.setFname(fname);
-					builder.setLname(lname);
-					if(!phoneNumberTextField.getText().trim().equals("")) {
-						builder.setTel(Arrays.asList(new String[] {phoneNumber}));
-					}
-					builder.setIban(iban);
-					builder.setDescription(description);
-					
-					Worker worker = null;
-					try {
-						worker = builder.build();
-					} catch (EntityException e1) {
-						System.out.println(e1.getMessage());
-					}
-					
-					
-					
-					if(WorkerDAO.getInstance().create(worker)) { 
-						JOptionPane.showMessageDialog(this, "Registration successful");
-						notifyAllObservers();
-					} else {
-						JOptionPane.showMessageDialog(this, "Not saved", "DataBase Error", JOptionPane.ERROR_MESSAGE);
-					}
-				}
-				
-			}
-			
+		fname = fnameTextField.getText().trim().toUpperCase();
+		lname = lnameTextField.getText().trim().toUpperCase();
+		iban = ibanTextField.getText().replaceAll("\\s+",  "").toUpperCase();			
+		phoneNumber = phoneNumberTextField.getText().replaceAll("\\s+",  "");
+		description = descriptionTextArea.getText().trim().toUpperCase();
+		
+
+		if(!isInputValid(fname, lname, iban, phoneNumber)) {
+			showErrorMessage("Please fill in required fields or \nEnter the Phone Nu. or Iban format correctly");
+			return;
+		} 
+		if(showOptionDialog(fname, lname, iban, phoneNumber, description) == 0) {
+			createAndSaveWorker(fname, lname, iban, phoneNumber, description);	
+		}
+	}
+
+	private void createAndSaveWorker(String fname, String lname, String iban, String phoneNumber, String description) {
+		Worker.WorkerBuilder builder = new Worker.WorkerBuilder();
+		builder.setId(Integer.MAX_VALUE);
+		builder.setFname(fname);
+		builder.setLname(lname);
+		if(!phoneNumberTextField.getText().trim().equals("")) {
+			builder.setTel(Arrays.asList(new String[] {phoneNumber}));
+		}
+		builder.setIban(iban);
+		builder.setDescription(description);
+		
+		Worker worker = null;
+		try {
+			worker = builder.build();
+		} catch (EntityException e1) {
+			System.out.println(e1.getMessage());
 		}
 		
+					
+		if(WorkerDAO.getInstance().create(worker)) { 
+			JOptionPane.showMessageDialog(this, "Registration successful");
+			notifyAllObservers();
+		} else {
+			JOptionPane.showMessageDialog(this, "Not saved", "DataBase Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private int showOptionDialog(String fname, String lname, String iban, String phoneNumber, String description) {
+		JTextArea fnameTextArea, lnameTextArea, phoneNumberTextArea, ibanTextArea, descriptionTextArea; 
+		
+		fnameTextArea = new JTextArea(fname);
+		fnameTextArea.setEditable(false);
+		
+		lnameTextArea = new JTextArea(lname);
+		lnameTextArea.setEditable(false);
+		
+		phoneNumberTextArea = new JTextArea(phoneNumber);
+		phoneNumberTextArea.setEditable(false);
+		
+		ibanTextArea = new JTextArea(iban);
+		ibanTextArea.setEditable(false);
+		
+		descriptionTextArea = new JTextArea(description);
+		descriptionTextArea.setEditable(false);
+		
+		
+		
+		Object[] pane = {
+				new JLabel("Name"),
+				fnameTextArea,
+				new JLabel("Surname"),
+				lnameTextArea,
+				new JLabel("Phone Number"),
+				phoneNumberTextArea,
+				new JLabel("Iban"),
+				ibanTextArea,
+				new JLabel("Description"),
+				new JScrollPane(descriptionTextArea) {
+					private static final long serialVersionUID = 1L;
+					public Dimension getPreferredSize() {
+						return new Dimension(200, TH * 3);
+					}
+				}
+		};
+		
+		
+
+		int result = JOptionPane.showOptionDialog(this, pane, "Confirmation", 1, 1, 
+				new ImageIcon("src\\icon\\accounting_icon_1_32.png"), new Object[] {"SAVE", "CANCEL"}, "CANCEL");
+		return result;
+	}
+
+	private void showErrorMessage(String message) {
+		JOptionPane.showMessageDialog(this, message, "ERROR", JOptionPane.ERROR_MESSAGE);
+	}
+
+	private boolean isInputValid(String fname, String lname, String iban, String phoneNumber) {
+		return !fname.equals("") && !lname.equals("") && Control.phoneNumberControl(phoneNumber) && Control.ibanControl(iban);
 	}
 	
 	
