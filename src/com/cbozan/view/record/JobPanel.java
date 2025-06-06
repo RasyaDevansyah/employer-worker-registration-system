@@ -35,6 +35,7 @@ import com.cbozan.exception.EntityException;
 import com.cbozan.view.component.RecordTextField;
 import com.cbozan.view.component.SearchBox;
 import com.cbozan.view.component.TextArea;
+import com.cbozan.view.display.EmployerCard;
 import com.cbozan.view.helper.Observer;
 
 public class JobPanel extends JPanel implements Observer, Serializable, ActionListener{
@@ -142,17 +143,34 @@ public class JobPanel extends JPanel implements Observer, Serializable, ActionLi
 		employerLabel.setBounds(LX, titleLabel.getY() + LVS, LW, LH);
 		add(employerLabel);
 		
+//		employerSearchBox = new SearchBox(EmployerDAO.getInstance().list(), new Dimension(TW, TH)) {
+//			private static final long serialVersionUID = 685599997274436984L;
+//			@Override
+//			public void mouseAction(MouseEvent e, Object searchResultObject, int chooseIndex) {
+//				selectedEmployer = (Employer) searchResultObject;
+//				employerSearchBox.setText(selectedEmployer.toString());
+//				employerSearchBox.setEditable(false);
+//				priceComboBox.requestFocus();
+//				super.mouseAction(e, searchResultObject, chooseIndex);
+//			}
+//		};
+		
 		employerSearchBox = new SearchBox(EmployerDAO.getInstance().list(), new Dimension(TW, TH)) {
-			private static final long serialVersionUID = 685599997274436984L;
+			private static final long serialVersionUID = 1L;
 			@Override
 			public void mouseAction(MouseEvent e, Object searchResultObject, int chooseIndex) {
 				selectedEmployer = (Employer) searchResultObject;
+				
 				employerSearchBox.setText(selectedEmployer.toString());
 				employerSearchBox.setEditable(false);
-				priceComboBox.requestFocus();
+				
+				employerSearchBox.setObjectList(JobDAO.getInstance().list(selectedEmployer));
+				
 				super.mouseAction(e, searchResultObject, chooseIndex);
 			}
 		};
+
+		
 		employerSearchBox.setBounds(LX + employerLabel.getWidth() + LHS, employerLabel.getY(), TW, TH);
 		add(employerSearchBox);
 		
