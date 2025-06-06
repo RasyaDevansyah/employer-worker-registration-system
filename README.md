@@ -19,6 +19,11 @@ An accounting program that contains employee and employer information and record
 ---
 
 ## Requirements
+* Java JDK 24 Tutorial : [https://www.youtube.com/watch?v=O9PWH9SeTTE]
+* Eclipse EE (Enterprise Edition) Tutorial : [https://www.youtube.com/watch?v=8aDsEV7txXE]
+* PostgreSQL and PgAdmin Tutorial [https://youtu.be/4qH-7w5LZsA?si=XBH_dXeIIZCKlqbz]
+
+
 Postgresql is used in this program. You can find the necessary jar file for postgresql java connection here:
 
 > https://jdbc.postgresql.org/download.html
@@ -34,14 +39,20 @@ DriverManager.getConnection("jdbc:postgresql://localhost:5432/db", "postgres", "
 ---
 
 **And finally, in order not to get a database error, you should add the following tables to the database:**
+### UPDATED DATABASE TABLES by rasya
 ```
-CREATE TABLE admin(id smallserial primary key not null, username varchar, password varchar);
-CREATE TABLE employer(employer_id serial primary key not null, name varchar not null, surname varchar not null, business varchar, phonenumber varchar);
-CREATE TABLE worker(worker_id serial primary key not null, name varchar not null, surname varchar not null, phone_number varchar);
-CREATE TABLE worker_record(worker_record_id serial primary key not null, worker_id integer references worker(worker_id), employer_id integer references employer(employer_id), date varchar(10) not null, wage smallint not null);
-CREATE TABLE employer_record(employer_record_id serial primary key not null, employer_id integer references employer(employer_id), date varchar(10) not null, note varchar(255), number_worker smallint not null, wage smallint not null);
-CREATE TABLE worker_payment(worker_payment_id serial primary key not null, worker_id integer references worker(worker_id), employer_id integer references employer(employer_id), date varchar(10) not null, paid integer not null);
-CREATE TABLE employer_payment(employer_payment_id serial primary key not null, employer_id integer references employer(employer_id), date varchar(10) not null, paid integer not null);
-CREATE TABLE worker_payment(worker_payment_id serial primary key not null, worker_id integer references worker(worker_id), employer_id integer references employer(employer_id), date varchar(10), not null, paid integer not null);
-```
+-- Core Tables
+CREATE TABLE auth (id SERIAL PRIMARY KEY, username VARCHAR(255) NOT NULL, pass VARCHAR(255) NOT NULL);
+CREATE TABLE employer (id SERIAL PRIMARY KEY, fname VARCHAR(255) NOT NULL, lname VARCHAR(255) NOT NULL, tel VARCHAR(255)[], description TEXT, date TIMESTAMP);
+CREATE TABLE worktype (id SERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL, no INTEGER, date TIMESTAMP);
+CREATE TABLE price (id SERIAL PRIMARY KEY, fulltime DECIMAL(10,2) NOT NULL, halftime DECIMAL(10,2) NOT NULL, overtime DECIMAL(10,2) NOT NULL, date TIMESTAMP);
 
+-- Job Related Tables
+CREATE TABLE job (id SERIAL PRIMARY KEY, employer_id INTEGER REFERENCES employer(id), price_id INTEGER REFERENCES price(id), title VARCHAR(255) NOT NULL, description TEXT, date TIMESTAMP);
+CREATE TABLE workgroup (id SERIAL PRIMARY KEY, job_id INTEGER REFERENCES job(id), worktype_id INTEGER REFERENCES worktype(id), workcount INTEGER NOT NULL, description TEXT, date TIMESTAMP);
+
+-- Payment Tables
+CREATE TABLE paytype (id SERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL, date TIMESTAMP);
+CREATE TABLE payment (id SERIAL PRIMARY KEY, worker_id INTEGER NOT NULL, job_id INTEGER REFERENCES job(id), paytype_id INTEGER REFERENCES paytype(id), amount DECIMAL(10,2) NOT NULL, date TIMESTAMP);
+CREATE TABLE invoice (id SERIAL PRIMARY KEY, job_id INTEGER REFERENCES job(id), amount DECIMAL(10,2) NOT NULL, date TIMESTAMP);
+```
