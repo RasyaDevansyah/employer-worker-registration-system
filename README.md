@@ -41,20 +41,104 @@ DriverManager.getConnection("jdbc:postgresql://localhost:5432/db", "postgres", "
 **And finally, in order not to get a database error, you should add the following tables to the database:**
 ### UPDATED DATABASE TABLES by rasya
 ```
--- Core Tables
-CREATE TABLE auth (id SERIAL PRIMARY KEY, username VARCHAR(255) NOT NULL, pass VARCHAR(255) NOT NULL);
-CREATE TABLE employer (id SERIAL PRIMARY KEY, fname VARCHAR(255) NOT NULL, lname VARCHAR(255) NOT NULL);
-CREATE TABLE worker (id SERIAL PRIMARY KEY, fname VARCHAR(255) NOT NULL, lname VARCHAR(255) NOT NULL, iban VARCHAR(255));
-CREATE TABLE worktype (id SERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL UNIQUE);
-CREATE TABLE price (id SERIAL PRIMARY KEY, fulltime NUMERIC(10,2) NOT NULL, halftime NUMERIC(10,2) NOT NULL);
-CREATE TABLE paytype (id SERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL UNIQUE);
+-- Table for user authentication (derived from LoginDAO.java)
+CREATE TABLE auth (
+    id SERIAL PRIMARY KEY NOT NULL,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+);
 
--- Job System
-CREATE TABLE job (id SERIAL PRIMARY KEY, employer_id INTEGER REFERENCES employer(id) ON DELETE CASCADE, price_id INTEGER REFERENCES price(id) ON DELETE CASCADE, title VARCHAR(255) NOT NULL UNIQUE);
-CREATE TABLE workgroup (id SERIAL PRIMARY KEY, job_id INTEGER REFERENCES job(id) ON DELETE CASCADE, worktype_id INTEGER REFERENCES worktype(id) ON DELETE CASCADE);
+-- Table for employers (derived from EmployerDAO.java)
+CREATE TABLE employer (
+    id SERIAL PRIMARY KEY NOT NULL,
+    fname VARCHAR(255) NOT NULL,
+    lname VARCHAR(255) NOT NULL,
+    tel VARCHAR(255)[], -- Array of phone numbers
+    description TEXT,
+    date TIMESTAMP DEFAULT NOW()
+);
 
--- Transactions
-CREATE TABLE work (id SERIAL PRIMARY KEY, job_id INTEGER REFERENCES job(id) ON DELETE CASCADE, worker_id INTEGER REFERENCES worker(id) ON DELETE CASCADE, workgroup_id INTEGER REFERENCES workgroup(id) ON DELETE CASCADE);
-CREATE TABLE payment (id SERIAL PRIMARY KEY, worker_id INTEGER REFERENCES worker(id) ON DELETE CASCADE, job_id INTEGER REFERENCES job(id) ON DELETE CASCADE, paytype_id INTEGER REFERENCES paytype(id) ON DELETE CASCADE, amount NUMERIC(10,2) NOT NULL);
-CREATE TABLE invoice (id SERIAL PRIMARY KEY, job_id INTEGER REFERENCES job(id) ON DELETE CASCADE, amount NUMERIC(10,2) NOT NULL);
+-- Table for workers (derived from WorkerDAO.java)
+CREATE TABLE worker (
+    id SERIAL PRIMARY KEY NOT NULL,
+    fname VARCHAR(255) NOT NULL,
+    lname VARCHAR(255) NOT NULL,
+    tel VARCHAR(255)[], -- Array of phone numbers
+    iban VARCHAR(255),
+    description TEXT,
+    date TIMESTAMP DEFAULT NOW()
+);
+
+-- Table for payment types (derived from PaytypeDAO.java)
+CREATE TABLE paytype (
+    id SERIAL PRIMARY KEY NOT NULL,
+    title VARCHAR(255) NOT NULL UNIQUE,
+    date TIMESTAMP DEFAULT NOW()
+);
+
+-- Table for pricing information (derived from PriceDAO.java)
+CREATE TABLE price (
+    id SERIAL PRIMARY KEY NOT NULL,
+    fulltime NUMERIC(10, 2) NOT NULL,
+    halftime NUMERIC(10, 2) NOT NULL,
+    overtime NUMERIC(10, 2) NOT NULL,
+    date TIMESTAMP DEFAULT NOW()
+);
+
+-- Table for jobs (derived from JobDAO.java)
+CREATE TABLE job (
+    id SERIAL PRIMARY KEY NOT NULL,
+    employer_id INTEGER NOT NULL REFERENCES employer(id) ON DELETE CASCADE,
+    price_id INTEGER NOT NULL REFERENCES price(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT,
+    date TIMESTAMP DEFAULT NOW()
+);
+
+-- Table for work types (derived from WorktypeDAO.java)
+CREATE TABLE worktype (
+    id SERIAL PRIMARY KEY NOT NULL,
+    title VARCHAR(255) NOT NULL UNIQUE,
+    no INTEGER, -- Added 'no' column as per WorktypeDAO.java
+    date TIMESTAMP DEFAULT NOW()
+);
+
+-- Table for work groups (derived from WorkgroupDAO.java)
+CREATE TABLE workgroup (
+    id SERIAL PRIMARY KEY NOT NULL,
+    job_id INTEGER NOT NULL REFERENCES job(id) ON DELETE CASCADE,
+    worktype_id INTEGER NOT NULL REFERENCES worktype(id) ON DELETE CASCADE,
+    workcount INTEGER, -- Added 'workcount' column as per WorkgroupDAO.java
+    description TEXT,
+    date TIMESTAMP DEFAULT NOW()
+);
+
+-- Table for individual work records (derived from WorkDAO.java)
+CREATE TABLE work (
+    id SERIAL PRIMARY KEY NOT NULL,
+    job_id INTEGER NOT NULL REFERENCES job(id) ON DELETE CASCADE,
+    worker_id INTEGER NOT NULL REFERENCES worker(id) ON DELETE CASCADE,
+    worktype_id INTEGER NOT NULL REFERENCES worktype(id) ON DELETE CASCADE,
+    workgroup_id INTEGER NOT NULL REFERENCES workgroup(id) ON DELETE CASCADE,
+    description TEXT,
+    date TIMESTAMP DEFAULT NOW()
+);
+
+-- Table for payments (derived from PaymentDAO.java)
+CREATE TABLE payment (
+    id SERIAL PRIMARY KEY NOT NULL,
+    worker_id INTEGER NOT NULL REFERENCES worker(id) ON DELETE CASCADE,
+    job_id INTEGER NOT NULL REFERENCES job(id) ON DELETE CASCADE,
+    paytype_id INTEGER NOT NULL REFERENCES paytype(id) ON DELETE CASCADE,
+    amount NUMERIC(10, 2) NOT NULL,
+    date TIMESTAMP DEFAULT NOW()
+);
+
+-- Table for invoices (derived from InvoiceDAO.java)
+CREATE TABLE invoice (
+    id SERIAL PRIMARY KEY NOT NULL,
+    job_id INTEGER NOT NULL REFERENCES job(id) ON DELETE CASCADE,
+    amount NUMERIC(10, 2) NOT NULL,
+    date TIMESTAMP DEFAULT NOW()
+);
 ```
