@@ -219,100 +219,104 @@ public class JobPanel extends JPanel implements Observer, Serializable, ActionLi
 		// başlık kontrolü
 		
 		if(e.getSource() == saveButton) {
-			
-			String title, description;
-			Employer employer;
-			Price price;
-			
-			
-			title = titleTextField.getText().trim().toUpperCase();
-			employer = selectedEmployer;
-			price = (Price) priceComboBox.getSelectedItem();
-			description = descriptionTextArea.getText().trim().toUpperCase();
-			
-			
-			if( title.equals("") || employer == null || price == null) {
-				
-				String message = "Please fill in or select the required fields.";
-				JOptionPane.showMessageDialog(this, message, "HATA", JOptionPane.ERROR_MESSAGE);
-			}	
-//			} else if(JobDAO.getInstance().isContainsTitle(title)){ // control
-//				JOptionPane.showMessageDialog(this, "db error, same job title");
-//			} 
-			else {
-				
-				JTextArea titleTextArea, employerTextArea, priceTextArea, descriptionTextArea; 
-				
-				titleTextArea = new JTextArea(title);
-				titleTextArea.setEditable(false);
-				
-				employerTextArea = new JTextArea(employer.toString());
-				employerTextArea.setEditable(false);
-				
-				priceTextArea = new JTextArea(price.toString());
-				priceTextArea.setEditable(false);
-				
-				descriptionTextArea = new JTextArea(description);
-				descriptionTextArea.setEditable(false);
-				
-				
-				
-				Object[] pane = {
-						new JLabel("Job Title"),
-						titleTextArea,
-						new JLabel("Employer"),
-						employerTextArea,
-						new JLabel("Price"),
-						priceTextArea,
-						new JLabel("Description"),
-						new JScrollPane(descriptionTextArea) {
-							private static final long serialVersionUID = 1L;
-							public Dimension getPreferredSize() {
-								return new Dimension(200, TH * 3);
-							}
-						}
-				};
-				
-				
+			save();
+		}
 		
-				int result = JOptionPane.showOptionDialog(this, pane, "Confirmation", 1, 1, 
-						new ImageIcon("src\\icon\\accounting_icon_1_32.png"), new Object[] {"SAVE", "CANCEL"}, "CANCEL");
-				
-				
-				// System.out.println(result);
-				// 0 -> SAVE
-				// 1 -> CANCEL
-						
-				if(result == 0) {
+	}
+
+	private void save() {
+		String title, description;
+		Employer employer;
+		Price price;
+		
+		title = titleTextField.getText().trim().toUpperCase();
+		employer = selectedEmployer;
+		price = (Price) priceComboBox.getSelectedItem();
+		description = descriptionTextArea.getText().trim().toUpperCase();
+		
+		
+		if( title.equals("") || employer == null || price == null) {
+			
+			String message = "Please fill in or select the required fields.";
+			JOptionPane.showMessageDialog(this, message, "HATA", JOptionPane.ERROR_MESSAGE);
+		}	
+		else {
+			int result = showOptionDialog(title, description, employer, price);
+			// System.out.println(result);
+			// 0 -> SAVE
+			// 1 -> CANCEL
 					
-					Job.JobBuilder builder = new Job.JobBuilder();
-					builder.setId(Integer.MAX_VALUE);
-					builder.setTitle(title);
-					builder.setEmployer(employer);
-					builder.setPrice(price);
-					builder.setDescription(description);
-					
-					Job job = null;
-					try {
-						job = builder.build();
-					} catch (EntityException e1) {
-						System.out.println(e1.getMessage());
-					}
-					
-					
-					if(JobDAO.getInstance().create(job)) { 
-						JOptionPane.showMessageDialog(this, "Registration successful");
-						notifyAllObservers();
-					} else {
-						JOptionPane.showMessageDialog(this, DB.ERROR_MESSAGE, "NOT SAVED", JOptionPane.ERROR_MESSAGE);
-						titleTextField.setBorder(new LineBorder(Color.red));
-					}
-				}
-				
+			if(result == 0) {
+				createAndSaveJob(title, description, employer, price);
 			}
 			
 		}
+	}
+
+
+	private void createAndSaveJob(String title, String description, Employer employer, Price price) {
+		Job.JobBuilder builder = new Job.JobBuilder();
+		builder.setId(Integer.MAX_VALUE);
+		builder.setTitle(title);
+		builder.setEmployer(employer);
+		builder.setPrice(price);
+		builder.setDescription(description);
 		
+		Job job = null;
+		try {
+			job = builder.build();
+		} catch (EntityException e1) {
+			System.out.println(e1.getMessage());
+		}
+		
+		
+		if(JobDAO.getInstance().create(job)) { 
+			JOptionPane.showMessageDialog(this, "Registration successful");
+			notifyAllObservers();
+		} else {
+			JOptionPane.showMessageDialog(this, DB.ERROR_MESSAGE, "NOT SAVED", JOptionPane.ERROR_MESSAGE);
+			titleTextField.setBorder(new LineBorder(Color.red));
+		}
+	}
+
+
+	private int showOptionDialog(String title, String description, Employer employer, Price price) {
+		JTextArea titleTextArea, employerTextArea, priceTextArea, descriptionTextArea; 
+
+		titleTextArea = new JTextArea(title);
+		titleTextArea.setEditable(false);
+
+		employerTextArea = new JTextArea(employer.toString());
+		employerTextArea.setEditable(false);
+
+		priceTextArea = new JTextArea(price.toString());
+		priceTextArea.setEditable(false);
+
+		descriptionTextArea = new JTextArea(description);
+		descriptionTextArea.setEditable(false);
+
+
+
+		Object[] pane = {
+				new JLabel("Job Title"),
+				titleTextArea,
+				new JLabel("Employer"),
+				employerTextArea,
+				new JLabel("Price"),
+				priceTextArea,
+				new JLabel("Description"),
+				new JScrollPane(descriptionTextArea) {
+					private static final long serialVersionUID = 1L;
+					public Dimension getPreferredSize() {
+						return new Dimension(200, TH * 3);
+					}
+				}
+		};
+
+
+
+		int result = ViewUtils.showConfirmationDialog(this, "Confirmation", pane);
+		return result;
 	}
 	
 	

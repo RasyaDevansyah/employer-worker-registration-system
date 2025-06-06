@@ -189,79 +189,85 @@ public class EmployerPanel extends JPanel implements Observer, ActionListener, S
 		phoneNumber = phoneNumberTextField.getText().replaceAll("\\s+", "");
 		description = ((JTextArea)((JViewport)descriptionScrollPane.getComponent(0)).getComponent(0)).getText().trim().toUpperCase();
 		
-		if( fname.equals("") || lname.equals("") || !Control.phoneNumberControl(phoneNumber) ) {
-			
-			String message = "Please fill in required fields or \\nEnter the Phone Number format correctly";
-			JOptionPane.showMessageDialog(this, message, "ERROR", JOptionPane.ERROR_MESSAGE);
-			
+		if( !isInputValid(fname, lname, phoneNumber) ) {
+			ViewUtils.showErrorMessage(this, "Please fill in required fields or \\nEnter the Phone Number format correctly");
 		} else {
-			
-			JTextArea fnameTextArea, lnameTextArea, phoneNumberTextArea, descriptionTextArea; 
-			
-			fnameTextArea = new JTextArea(fname);
-			fnameTextArea.setEditable(false);
-			
-			lnameTextArea = new JTextArea(lname);
-			lnameTextArea.setEditable(false);
-			
-			phoneNumberTextArea = new JTextArea(phoneNumber);
-			phoneNumberTextArea.setEditable(false);
-			
-			descriptionTextArea = new JTextArea(description);
-			descriptionTextArea.setEditable(false);
-			
-			Object[] pane = {
-					new JLabel("Name"),
-					fnameTextArea,
-					new JLabel("Surname"),
-					lnameTextArea,
-					new JLabel("Phone Number"),
-					phoneNumberTextArea,
-					new JLabel("Description"),
-					new JScrollPane(descriptionTextArea) {
-						private static final long serialVersionUID = 1L;
-						public Dimension getPreferredSize() {
-							return new Dimension(200, TH * 3);
-						}
-					}
-			};
-			
-
-			int result = JOptionPane.showOptionDialog(this, pane, "Confirmation", 1, 1, 
-					new ImageIcon("src\\icon\\accounting_icon_1_32.png"), new Object[] {"SAVE", "CANCEL"}, "CANCEL");
-			
+			int result = showOptionDialog(fname, lname, phoneNumber, description);
 			// System.out.println(result);
 			// 0 -> SAVE
 			// 1 -> CANCEL
-					
 			if(result == 0) {
-				
-				Employer.EmployerBuilder builder = new Employer.EmployerBuilder();
-				builder.setId(Integer.MAX_VALUE);
-				builder.setFname(fname);
-				builder.setLname(lname);
-				if(!phoneNumberTextField.getText().trim().equals("")) {
-					builder.setTel(Arrays.asList(new String[] {phoneNumber}));
-				}
-				builder.setDescription(description);
-				
-				Employer employer = null;
-				try {
-					employer = builder.build();
-				} catch (EntityException e1) {
-					System.out.println(e1.getMessage());
-				}
-				
-				if(EmployerDAO.getInstance().create(employer)) { 
-					JOptionPane.showMessageDialog(this, "Registration Successful");
-					notifyAllObservers();
-				} else {
-					JOptionPane.showMessageDialog(this, "Not saved", "DataBase error", JOptionPane.ERROR_MESSAGE);
-				}
-				
+				createAndSaveEmployer(fname, lname, phoneNumber, description);
 			}
 			
 		} 
+	}
+
+
+	private void createAndSaveEmployer(String fname, String lname, String phoneNumber, String description) {
+		Employer.EmployerBuilder builder = new Employer.EmployerBuilder();
+		builder.setId(Integer.MAX_VALUE);
+		builder.setFname(fname);
+		builder.setLname(lname);
+		if(!phoneNumberTextField.getText().trim().equals("")) {
+			builder.setTel(Arrays.asList(new String[] {phoneNumber}));
+		}
+		builder.setDescription(description);
+		
+		Employer employer = null;
+		try {
+			employer = builder.build();
+		} catch (EntityException e1) {
+			System.out.println(e1.getMessage());
+		}
+		
+		if(EmployerDAO.getInstance().create(employer)) { 
+			JOptionPane.showMessageDialog(this, "Registration Successful");
+			notifyAllObservers();
+		} else {
+			JOptionPane.showMessageDialog(this, "Not saved", "DataBase error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+
+	private int showOptionDialog(String fname, String lname, String phoneNumber, String description) {
+		JTextArea fnameTextArea, lnameTextArea, phoneNumberTextArea, descriptionTextArea; 
+		fnameTextArea = new JTextArea(fname);
+		fnameTextArea.setEditable(false);
+		
+		lnameTextArea = new JTextArea(lname);
+		lnameTextArea.setEditable(false);
+		
+		phoneNumberTextArea = new JTextArea(phoneNumber);
+		phoneNumberTextArea.setEditable(false);
+		
+		descriptionTextArea = new JTextArea(description);
+		descriptionTextArea.setEditable(false);
+		
+		Object[] pane = {
+				new JLabel("Name"),
+				fnameTextArea,
+				new JLabel("Surname"),
+				lnameTextArea,
+				new JLabel("Phone Number"),
+				phoneNumberTextArea,
+				new JLabel("Description"),
+				new JScrollPane(descriptionTextArea) {
+					private static final long serialVersionUID = 1L;
+					public Dimension getPreferredSize() {
+						return new Dimension(200, TH * 3);
+					}
+				}
+		};
+		
+
+		int result = ViewUtils.showConfirmationDialog(this, "Confirmation", pane);
+		return result;
+	}
+
+
+	private boolean isInputValid(String fname, String lname, String phoneNumber) {
+		return !fname.equals("") && !lname.equals("") && Control.phoneNumberControl(phoneNumber);
 	}
 	
 	private void clearPanel() {

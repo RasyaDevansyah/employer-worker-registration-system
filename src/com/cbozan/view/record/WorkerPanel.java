@@ -205,7 +205,7 @@ public class WorkerPanel extends JPanel implements Observer, Serializable, Actio
 		
 
 		if(!isInputValid(fname, lname, iban, phoneNumber)) {
-			showErrorMessage("Please fill in required fields or \nEnter the Phone Nu. or Iban format correctly");
+			ViewUtils.showErrorMessage(this, "Please fill in required fields or \nEnter the Phone Nu. or Iban format correctly");
 			return;
 		} 
 		if(showOptionDialog(fname, lname, iban, phoneNumber, description) == 0) {
@@ -279,15 +279,12 @@ public class WorkerPanel extends JPanel implements Observer, Serializable, Actio
 		};
 		
 		
-
-		int result = JOptionPane.showOptionDialog(this, pane, "Confirmation", 1, 1, 
-				new ImageIcon("src\\icon\\accounting_icon_1_32.png"), new Object[] {"SAVE", "CANCEL"}, "CANCEL");
+		int result = ViewUtils.showConfirmationDialog(this, "Confirmation", pane);
+				
 		return result;
 	}
 
-	private void showErrorMessage(String message) {
-		JOptionPane.showMessageDialog(this, message, "ERROR", JOptionPane.ERROR_MESSAGE);
-	}
+
 
 	private boolean isInputValid(String fname, String lname, String iban, String phoneNumber) {
 		return !fname.equals("") && !lname.equals("") && Control.phoneNumberControl(phoneNumber) && Control.ibanControl(iban);
