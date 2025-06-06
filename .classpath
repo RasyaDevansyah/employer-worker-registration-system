@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/ASUS ZENBOOK/Downloads/postgresql-42.7.6.jar">
+	<classpathentry kind="lib" path="C:/Users/USER/Downloads/postgresql-42.7.6.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
