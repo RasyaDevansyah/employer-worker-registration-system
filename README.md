@@ -45,7 +45,7 @@ DriverManager.getConnection("jdbc:postgresql://localhost:5432/db", "postgres", "
 CREATE TABLE auth (
     id SERIAL PRIMARY KEY NOT NULL,
     username VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
+    pass VARCHAR(255) NOT NULL
 );
 
 -- Table for employers (derived from EmployerDAO.java)
