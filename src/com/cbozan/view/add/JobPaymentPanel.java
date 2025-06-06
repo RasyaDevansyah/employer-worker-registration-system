@@ -43,51 +43,15 @@ public class JobPaymentPanel extends JPanel implements Observer,FocusListener, A
 	private static final long serialVersionUID = 291336645961737012L;
 	private final List<Observer> observers;
 	
-	/*
-	 * Left label x position
-	 */
-	private final int LLX = 100;
-	
-	/*
-	 * Right label x position
-	 */
-	private final int RLX = 480;
-	
-	/*
-	 * Left Label y positon
-	 */
-	private final int LLY = 220;
-	
-	/*
-	 * Right Label y positon
-	 */
-	private final int RLY = 30;
-	
-	/*
-	 * Left Label width
-	 */
-	private final int LLW = 200;
-	
-	/*
-	 * Right Label width
-	 */
-	private final int RLW = 500;
-	
-	/*
-	 * Label height
-	 */
-	private final int LH = 25;
-	
-	/*
-	 * small height space
-	 */
-	private final int SHS = 5;
-	
-	/*
-	 * mid height space
-	 */
-	private final int MHS = 15;
-	
+	private final int LEFT_PANEL_X_POSITION = 100;
+	private final int RIGHT_PANEL_X_POSITION = 480;
+	private final int LEFT_PANEL_Y_POSITION = 220;
+	private final int RIGHT_PANEL_Y_POSITION = 30;
+	private final int LEFT_PANEL_WIDTH = 200;
+	private final int RIGHT_PANEL_WIDTH = 500;
+	private final int STANDARD_COMPONENT_HEIGHT = 25;
+	private final int SMALL_VERTICAL_SPACING = 5;
+	private final int MEDIUM_VERTICAL_SPACING = 15;
 	private final String[] invoiceTableColumns = {"ID", "Amount", "Date"};
 	
 	private JLabel imageLabel, searchImageLabel;
@@ -111,43 +75,43 @@ public class JobPaymentPanel extends JPanel implements Observer,FocusListener, A
 		imageLabel = new JLabel();
 		imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		imageLabel.setIcon(new ImageIcon("src\\icon\\new_job_payment.png"));
-		imageLabel.setBounds(LLX, 40, 128, 130);
+		imageLabel.setBounds(LEFT_PANEL_X_POSITION, 40, 128, 130);
 		add(imageLabel);
 		
 		defaultColor = imageLabel.getForeground();
 		selectedJob = null;
 		
 		jobTitleLabel = new JLabel("Job title");
-		jobTitleLabel.setBounds(LLX, LLY, LLW, LH);
+		jobTitleLabel.setBounds(LEFT_PANEL_X_POSITION, LEFT_PANEL_Y_POSITION, LEFT_PANEL_WIDTH, STANDARD_COMPONENT_HEIGHT);
 		add(jobTitleLabel);
 		
 		jobTitleTextField = new JTextField("Please select job");
 		jobTitleTextField.setEditable(false);
-		jobTitleTextField.setBounds(jobTitleLabel.getX(), jobTitleLabel.getY() + LH + SHS, LLW, LH);
+		jobTitleTextField.setBounds(jobTitleLabel.getX(), jobTitleLabel.getY() + STANDARD_COMPONENT_HEIGHT + SMALL_VERTICAL_SPACING, LEFT_PANEL_WIDTH, STANDARD_COMPONENT_HEIGHT);
 		add(jobTitleTextField);
 		
 		employerLabel = new JLabel("Employer");
-		employerLabel.setBounds(jobTitleTextField.getX(), jobTitleTextField.getY() + LH + MHS, LLW, LH);
+		employerLabel.setBounds(jobTitleTextField.getX(), jobTitleTextField.getY() + STANDARD_COMPONENT_HEIGHT + MEDIUM_VERTICAL_SPACING, LEFT_PANEL_WIDTH, STANDARD_COMPONENT_HEIGHT);
 		add(employerLabel);
 		
 		employerTextField = new JTextField("Please select employer");
 		employerTextField.setEditable(false);
-		employerTextField.setBounds(employerLabel.getX(), employerLabel.getY() + LH + SHS, LLW, LH);
+		employerTextField.setBounds(employerLabel.getX(), employerLabel.getY() + STANDARD_COMPONENT_HEIGHT + SMALL_VERTICAL_SPACING, LEFT_PANEL_WIDTH, STANDARD_COMPONENT_HEIGHT);
 		add(employerTextField);
 		
 		amountLabel = new JLabel("Amount of payment");
-		amountLabel.setBounds(employerTextField.getX(), employerTextField.getY() + LH + SHS + MHS + MHS, LLW, LH);
+		amountLabel.setBounds(employerTextField.getX(), employerTextField.getY() + STANDARD_COMPONENT_HEIGHT + SMALL_VERTICAL_SPACING + MEDIUM_VERTICAL_SPACING + MEDIUM_VERTICAL_SPACING, LEFT_PANEL_WIDTH, STANDARD_COMPONENT_HEIGHT);
 		add(amountLabel);
 		
 				
 		amountTextField= new JTextField();
-		amountTextField.setBounds(amountLabel.getX(), amountLabel.getY() + LH + SHS, LLW, LH);
+		amountTextField.setBounds(amountLabel.getX(), amountLabel.getY() + STANDARD_COMPONENT_HEIGHT + SMALL_VERTICAL_SPACING, LEFT_PANEL_WIDTH, STANDARD_COMPONENT_HEIGHT);
 		amountTextField.setHorizontalAlignment(SwingConstants.CENTER);
 		amountTextField.addFocusListener(this);
 		amountTextField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!amountTextField.getText().replaceAll("\\s+", "").equals("") 
-						&& decimalControl(amountTextField.getText())) {
+						&& isValidDecimalFormat(amountTextField.getText())) {
 				
 					takePaymentButton.doClick();
 					
@@ -158,17 +122,17 @@ public class JobPaymentPanel extends JPanel implements Observer,FocusListener, A
 		
 		
 		takePaymentButton = new JButton("TAKE PAYMENT (SAVE)");
-		takePaymentButton.setBounds(amountTextField.getX(), amountTextField.getY() + LH + MHS + SHS, amountTextField.getWidth(), 30);
+		takePaymentButton.setBounds(amountTextField.getX(), amountTextField.getY() + STANDARD_COMPONENT_HEIGHT + MEDIUM_VERTICAL_SPACING + SMALL_VERTICAL_SPACING, amountTextField.getWidth(), 30);
 		takePaymentButton.setFocusPainted(false);
 		takePaymentButton.addActionListener(this);
 		add(takePaymentButton);
 		
 		
 		searchImageLabel = new JLabel(new ImageIcon("src\\icon\\search.png"));
-		searchImageLabel.setBounds(RLX - 32 + RLW / 2, RLY, 64, 64);
+		searchImageLabel.setBounds(RIGHT_PANEL_X_POSITION - 32 + RIGHT_PANEL_WIDTH / 2, RIGHT_PANEL_Y_POSITION, 64, 64);
 		add(searchImageLabel);
 		
-		searchJobSearchBox = new SearchBox(JobDAO.getInstance().list(), new Dimension(RLW, LH)) {
+		searchJobSearchBox = new SearchBox(JobDAO.getInstance().list(), new Dimension(RIGHT_PANEL_WIDTH, STANDARD_COMPONENT_HEIGHT)) {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void mouseAction(MouseEvent e, Object searchResultObject, int chooseIndex) {
@@ -181,10 +145,10 @@ public class JobPaymentPanel extends JPanel implements Observer,FocusListener, A
 				super.mouseAction(e, searchResultObject, chooseIndex);
 			}
 		};
-		searchJobSearchBox.setBounds(RLX, searchImageLabel.getY() + 64 + MHS, RLW, LH);
+		searchJobSearchBox.setBounds(RIGHT_PANEL_X_POSITION, searchImageLabel.getY() + 64 + MEDIUM_VERTICAL_SPACING, RIGHT_PANEL_WIDTH, STANDARD_COMPONENT_HEIGHT);
 		add(searchJobSearchBox);
 		
-		searchJobSearchBox.getPanel().setBounds(RLX, searchJobSearchBox.getY() + searchJobSearchBox.getHeight(), searchJobSearchBox.getWidth(), 0);
+		searchJobSearchBox.getPanel().setBounds(RIGHT_PANEL_X_POSITION, searchJobSearchBox.getY() + searchJobSearchBox.getHeight(), searchJobSearchBox.getWidth(), 0);
 		add(searchJobSearchBox.getPanel());
 		
 		
@@ -200,21 +164,23 @@ public class JobPaymentPanel extends JPanel implements Observer,FocusListener, A
 				setShowHorizontalLines(false);
 			}
 		});
-		lastPaymentsScroll.setBounds(RLX, jobTitleTextField.getY(), RLW, 255);
+		lastPaymentsScroll.setBounds(RIGHT_PANEL_X_POSITION, jobTitleTextField.getY(), RIGHT_PANEL_WIDTH, 255);
 		add(lastPaymentsScroll);
 		
 		clearPanel();
 	}
 	
 	
-	private boolean decimalControl(String ...args) {
-		Pattern pattern = Pattern.compile("^\\d+(\\.\\d{1,2})?$"); // decimal pattern xxx.xx
-		boolean result = true;
-		
-		for(String arg : args)
-			result = result && pattern.matcher(arg.replaceAll("\\s+", "")).find();
-		
-		return result;
+	private static final Pattern DECIMAL_FORMAT_PATTERN = Pattern.compile("^\\d+(\\.\\d{1,2})?$");
+
+	private boolean isValidDecimalFormat(String... amounts) {
+	    for (String amount : amounts) {
+	        String cleanAmount = amount.replaceAll("\\s+", "");
+	        if (!DECIMAL_FORMAT_PATTERN.matcher(cleanAmount).matches()) {
+	            return false;
+	        }
+	    }
+	    return true;
 	}
 
 	@Override
@@ -238,7 +204,7 @@ public class JobPaymentPanel extends JPanel implements Observer,FocusListener, A
 			
 			Color color = Color.white;
 			
-			if(decimalControl(((JTextField)e.getSource()).getText())) {
+			if(isValidDecimalFormat(((JTextField)e.getSource()).getText())) {
 				color = new Color(0, 180, 0);
 			} else {
 				color = Color.red;
@@ -263,7 +229,7 @@ public class JobPaymentPanel extends JPanel implements Observer,FocusListener, A
 			job = selectedJob;
 			amount = amountTextField.getText().replaceAll("\\s+", "");
 
-			if(!decimalControl(amount) || job == null) {
+			if(!isValidDecimalFormat(amount) || job == null) {
 				
 				String message;
 				message = "Please enter job selection section or format correctly (max 2 floating point)";
