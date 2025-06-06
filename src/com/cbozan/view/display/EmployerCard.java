@@ -266,37 +266,49 @@ public class EmployerCard extends JPanel implements ActionListener{
 		
 	}
 
+	private void updateEmployerEntityFromUI() {
+	    setFnameTextFieldContent(getFnameTextFieldContent());
+	    setLnameTextFieldContent(getLnameTextFieldContent());
+	    setTelTextFieldContent(getTelTextFieldContent());
+	    setDescriptionTextAreaContent(getDescriptionTextAreaContent());
+	}
+
+	private boolean updateEmployerInDatabase() {
+	    return EmployerDAO.getInstance().update(selectedEmployer);
+	}
+
+	private void showUpdateResultMessage(boolean success) {
+	    if(success) {
+	        JOptionPane.showMessageDialog(this, "Update successful", "SUCCESSFUL", JOptionPane.INFORMATION_MESSAGE);
+	    } else {
+	        JOptionPane.showMessageDialog(this, "Update failed", "UNSUCCESSFUL", JOptionPane.ERROR_MESSAGE);
+	    }
+	}
+
+	private void notifyObserver() {
+	    Component component = getParent();
+	    while(component != null && component.getClass() != EmployerDisplay.class) {
+	        component = component.getParent();
+	    }
+	    if(component != null) {
+	        ((Observer)component).update();
+	    }
+	}
+
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
-		
-		if(e.getSource() == updateButton && selectedEmployer != null) {
-			setFnameTextFieldContent(getFnameTextFieldContent());
-			setLnameTextFieldContent(getLnameTextFieldContent());
-			setTelTextFieldContent(getTelTextFieldContent());
-			setDescriptionTextAreaContent(getDescriptionTextAreaContent());
-			
-			if(true == EmployerDAO.getInstance().update(selectedEmployer)) {
-				JOptionPane.showMessageDialog(this, "Update successful", "SUCCESSFUL", JOptionPane.INFORMATION_MESSAGE);
-				
-				Component component = getParent();
-				while(component != null && component.getClass() != EmployerDisplay.class) {
-					component = component.getParent();
-				}
-				
-				if(component != null) {
-					((Observer)component).update();
-				}
-				
-			} else {
-				JOptionPane.showMessageDialog(this, "Update failed", "UNSUCCESSFUL", JOptionPane.ERROR_MESSAGE);
-			}
-			
-			
-			
-		}
-		
+	    if(e.getSource() == updateButton && selectedEmployer != null) {
+	        updateEmployerEntityFromUI();
+	        boolean success = updateEmployerInDatabase();
+	        
+	        showUpdateResultMessage(success);
+	        
+	        if(success) {
+	            notifyObserver();
+	        }
+	    }
 	}
+
 
 }
