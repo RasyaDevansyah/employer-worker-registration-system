@@ -11,7 +11,7 @@ import com.cbozan.util.DBConst;
 public final class Worker implements Serializable, Cloneable{
 
 	private static final long serialVersionUID = -8976577868127567445L;
-	
+
 	private int id;
 	private String fname;
 	private String lname;
@@ -19,7 +19,7 @@ public final class Worker implements Serializable, Cloneable{
 	private String iban;
 	private String description;
 	private Timestamp date;
-	
+
 	private Worker() {
 		this.id = 0;
 		this.fname = null;
@@ -29,22 +29,22 @@ public final class Worker implements Serializable, Cloneable{
 		this.description = null;
 		this.date = null;
 	}
-	
+
 	private Worker(Worker.WorkerBuilder builder) throws EntityException {
 		super();
 		setId(builder.id);
 		setFname(builder.fname);
-		setLname(builder.lname); 
+		setLname(builder.lname);
 		setTel(builder.tel);
 		setIban(builder.iban);
 		setDescription(builder.description);
 		setDate(builder.date);
 	}
-	
-	
+
+
 	// Builder class
 	public static class WorkerBuilder{
-		
+
 		private int id;
 		private String fname;
 		private String lname;
@@ -54,16 +54,6 @@ public final class Worker implements Serializable, Cloneable{
 		private Timestamp date;
 
 		public WorkerBuilder() {}
-		public WorkerBuilder(int id, String fname, String lname, List<String> tel, String iban, String description, Timestamp date) {
-			super();
-			this.id = id;
-			this.fname = fname;
-			this.lname = lname;
-			this.tel = tel;
-			this.iban = iban;
-			this.description = description;
-			this.date = date;
-		}
 
 		public WorkerBuilder setId(int id) {
 			this.id = id;
@@ -84,7 +74,7 @@ public final class Worker implements Serializable, Cloneable{
 			this.tel = tel;
 			return this;
 		}
-		
+
 		public WorkerBuilder setIban(String iban) {
 			this.iban = iban;
 			return this;
@@ -99,18 +89,18 @@ public final class Worker implements Serializable, Cloneable{
 			this.date = date;
 			return this;
 		}
-		
+
 		public Worker build() throws EntityException {
 			return new Worker(this);
-		}		
-		
+		}
+
 	}
 
-	
+
 	private static class EmptyInstanceSingleton{
-		private static final Worker instance = new Worker(); 
+		private static final Worker instance = new Worker();
 	}
-	
+
 	public static final Worker getEmptyInstance() {
 		return EmptyInstanceSingleton.instance;
 	}
@@ -176,7 +166,7 @@ public final class Worker implements Serializable, Cloneable{
 	public void setDate(Timestamp date) {
 		this.date = date;
 	}
-	
+
 	@Override
 	public String toString() {
 		return " " + getFname() + " " + getLname();
@@ -200,7 +190,7 @@ public final class Worker implements Serializable, Cloneable{
 				&& Objects.equals(fname, other.fname) && Objects.equals(iban, other.iban) && id == other.id
 				&& Objects.equals(lname, other.lname) && Objects.equals(tel, other.tel);
 	}
-	
+
 	@Override
 	public Worker clone(){
 		// TODO Auto-generated method stub
@@ -211,5 +201,5 @@ public final class Worker implements Serializable, Cloneable{
 			return null;
 		}
 	}
-	
+
 }
